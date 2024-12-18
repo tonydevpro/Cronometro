@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="Pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cronometro</title>
+    <style>
+        section{
+            width: 100%;
+            text-align: center;
+        }
+        input{
+            margin: 2% 0;
+            border: 2px solid black;
+            border-radius: 50%;
+            width: 100px;
+            height: 100px;
+            background-color: rgb(206, 206, 206);
+        }
+        button{
+            padding: 10px 20px;
+            background-color: blue;
+            color: aliceblue;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 3%;
+        }
+        .time h1{
+            font-family: Courier, monospace;
+            font-size: x-large;
+            font-style: italic;
+            box-shadow: 5px 5px 20px;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <audio src="alarm.mp3" id="alarm"></audio>
+    <section>
+        <div class="time">
+            <h1>Cronometro</h1>
+            <input type="number" name="" id="timeInput">
+        </div>
+        <button>Começar</button>
+        <div class="display" id="display">
+
+        </div>
+    </section>
+    <script>
+        let remainingTime;
+        let interval;
+
+        document.querySelector('button').addEventListener('click', () => {
+            const inputValue = document.getElementById('timeInput').value;
+
+            if (!inputValue || inputValue <= 0) {
+                alert('Por favor, insira um valor válido de segundos.');
+                return;
+            }
+
+            remainingTime = parseInt(inputValue, 10);
+
+            // Para evitar múltiplos intervalos simultâneos
+            clearInterval(interval);
+
+            interval = setInterval(updateDisplay, 1000);
+
+            function updateDisplay() {
+                const minutes = Math.floor(remainingTime / 60);
+                const seconds = remainingTime % 60;
+                const formattedTime = `${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`;
+
+                document.getElementById('display').innerText = formattedTime;
+
+                remainingTime--;
+
+                if (remainingTime < 0) {
+                    clearInterval(interval);
+                    document.getElementById('display').innerText = "Tempo Esgotado!";
+                    const alarm = document.getElementById('alarm');
+                    alarm.play();  // Toca o som do alarme
+                    setTimeout(() => {
+                        alarm.pause();  // Para o som após alguns segundos
+                        alarm.currentTime = 0;
+                    }, 8000);  // Toca por 8 segundos
+                }
+            }
+        });
+    </script>
+</body>
+</html>
